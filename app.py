@@ -4,6 +4,7 @@ import wave
 import json
 import subprocess
 from werkzeug.utils import secure_filename
+import re
 
 app = Flask(__name__)
 
@@ -21,6 +22,9 @@ TRANSCRIPTIONS = {}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def natural_sort_key(s):
+    return [int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', s)]
+
 def read_transcriptions(file_path):
     transcriptions = {}
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -28,12 +32,20 @@ def read_transcriptions(file_path):
             parts = line.strip().split('|')
             if len(parts) == 2:
                 audio_id, text = parts
+                audio_id = os.path.basename(audio_id)
                 transcriptions[audio_id] = text
-    return transcriptions
+    return transcriptions  # Return transcriptions without sorting
+
 
 @app.route('/')
 def index():
     return render_template('index.html', transcriptions=TRANSCRIPTIONS)
+
+@app.route('/sorted_files')
+def sorted_files():
+    files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
+    return jsonify(files)  # Return files without sorting
+
 
 @app.route('/upload_transcriptions', methods=['POST'])
 def upload_transcriptions():
@@ -58,6 +70,36 @@ def upload_transcriptions():
         except Exception as e:
             return jsonify({"status": "error", "message": f"Error processing file: {str(e)}"}), 500
     return jsonify({"status": "error", "message": "Invalid file type"}), 400
+
+
+@app.route('/update_transcription', methods=['POST'])
+def update_transcription():
+    global TRANSCRIPTIONS
+    data = request.json
+    audio_id = data.get('audio_id')
+    new_text = data.get('text')
+    if audio_id and new_text:
+        TRANSCRIPTIONS[audio_id] = new_text
+        transcription_file = next((f for f in os.listdir(app.config['UPLOAD_FOLDER']) if f.endswith('.txt')), None)
+        if transcription_file:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], transcription_file)
+            with open(file_path, 'r', encoding='utf-8') as file:
+                lines = file.readlines()
+            
+            with open(file_path, 'w', encoding='utf-8') as file:
+                for line in lines:
+                    parts = line.strip().split('|')
+                    if len(parts) == 2:
+                        line_audio_id, _ = parts
+                        if line_audio_id == audio_id:
+                            file.write(f"{audio_id}|{new_text}\n")
+                        else:
+                            file.write(line)
+                    else:
+                        file.write(line)
+                
+        return jsonify({"status": "success", "message": "Transcription updated successfully"})
+    return jsonify({"status": "error", "message": "Invalid data"}), 400
 
 @app.route('/record', methods=['POST'])
 def record():
@@ -105,7 +147,7 @@ def serve_audio(filename):
 @app.route('/list_files')
 def list_files():
     files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
-    return jsonify(files)
+    return jsonify(sorted(files, key=natural_sort_key))
 
 @app.route('/file_info/<path:filename>')
 def file_info(filename):
@@ -136,6 +178,19 @@ def file_info(filename):
             "modified": file_stats.st_mtime
         }
     return jsonify(info)
+
+@app.route('/set_upload_folder', methods=['POST'])
+def set_upload_folder():
+    data = request.json
+    new_folder = data.get('folder')
+    if new_folder:
+        global UPLOAD_FOLDER
+        UPLOAD_FOLDER = new_folder
+        app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+        return jsonify({"status": "success", "message": f"Upload folder set to {UPLOAD_FOLDER}"})
+    return jsonify({"status": "error", "message": "Invalid folder path"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

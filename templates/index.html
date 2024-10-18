@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dataset Handler</title>
+    <title>Advanced Audio Recorder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes pulse {
@@ -20,32 +20,32 @@
         <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
         <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
             <div class="max-w-md mx-auto">
-                <div>
-                    <h1 class="text-2xl font-semibold text-center text-gray-900">Advanced Audio Recorder</h1>
-                </div>
+                <h1 class="text-2xl font-semibold text-center text-gray-900 mb-6">Advanced Audio Recorder</h1>
                 
-                <div class="divide-y divide-gray-200">
-                    <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                        <div class="flex items-center justify-between">
-                            <div id="fileUpload" class="relative">
-                                <input type="file" id="transcriptionsFile" accept=".txt" class="sr-only">
-                                <label for="transcriptionsFile" class="cursor-pointer bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded inline-flex items-center transition duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                    </svg>
-                                    Upload Transcriptions
-                                </label>
-                            </div>
-                            <button id="uploadButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
-                                Upload
-                            </button>
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div id="fileUpload" class="relative">
+                            <input type="file" id="transcriptionsFile" accept=".txt" class="sr-only">
+                            <label for="transcriptionsFile" class="cursor-pointer bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded inline-flex items-center transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                Upload Transcriptions
+                            </label>
                         </div>
-                        <div id="uploadInfo" class="mt-2 text-sm text-gray-600"></div>
+                        <button id="uploadButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+                            Upload
+                        </button>
                     </div>
+                    <div id="uploadInfo" class="text-sm text-gray-600"></div>
                     
-                    <div id="transcription" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7"></div>
+                    <div id="transcription" class="mb-4 p-2 bg-gray-100 rounded"></div>
+                    <textarea id="transcriptionEdit" class="w-full p-2 border rounded" rows="3"></textarea>
+                    <button id="saveTranscription" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+                        Save Transcription
+                    </button>
                     
-                    <div id="controls" class="py-8 flex justify-center space-x-4">
+                    <div id="controls" class="flex justify-center space-x-4">
                         <button id="recordButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
@@ -61,7 +61,7 @@
                         </button>
                         <button id="playButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 flex items-center" disabled>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a11 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             Play
@@ -74,27 +74,34 @@
                         </button>
                     </div>
                     
-                    <audio id="audioPlayback" controls class="w-full mb-8 hidden"></audio>
+                    <audio id="audioPlayback" controls class="w-full mb-4 hidden"></audio>
                     
-                    <div class="py-8">
+                    <div>
                         <h2 class="text-xl font-semibold mb-4 text-gray-800">File Directory</h2>
-                        <ul id="fileList" class="space-y-2"></ul>
+                        <ul id="fileList" class="space-y-2 max-h-40 overflow-y-auto"></ul>
                     </div>
                     
-                    <div id="fileInfo" class="py-8 hidden">
+                    <div id="fileInfo" class="hidden">
                         <h2 class="text-xl font-semibold mb-4 text-gray-800">File Information</h2>
-                        <pre id="fileInfoContent" class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto"></pre>
+                        <pre id="fileInfoContent" class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto max-h-40"></pre>
                     </div>
-                </div>
                 
-                <div class="mt-8">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Audio List</h2>
-                    <ul id="audioList" class="space-y-2"></ul>
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Audio List</h2>
+                        <ul id="audioList" class="space-y-2 max-h-40 overflow-y-auto"></ul>
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">Set Upload Folder</h2>
+                        <input type="text" id="uploadFolderInput" class="w-full p-2 border rounded mb-2" placeholder="Enter new upload folder path">
+                        <button id="setUploadFolderButton" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+                            Set Upload Folder
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <script>
         let mediaRecorder;
@@ -106,6 +113,8 @@
         const playButton = document.getElementById('playButton');
         const nextButton = document.getElementById('nextButton');
         const transcriptionDiv = document.getElementById('transcription');
+        const transcriptionEdit = document.getElementById('transcriptionEdit');
+        const saveTranscriptionButton = document.getElementById('saveTranscription');
         const audioPlayback = document.getElementById('audioPlayback');
         const audioList = document.getElementById('audioList');
         const uploadButton = document.getElementById('uploadButton');
@@ -114,19 +123,21 @@
         const fileList = document.getElementById('fileList');
         const fileInfo = document.getElementById('fileInfo');
         const fileInfoContent = document.getElementById('fileInfoContent');
+        const uploadFolderInput = document.getElementById('uploadFolderInput');
+        const setUploadFolderButton = document.getElementById('setUploadFolderButton');
 
         let transcriptions = {};
         let audioIds = [];
         let currentIndex = 0;
 
         function updateFileList() {
-            fetch('/list_files')
+            fetch('/sorted_files')
                 .then(response => response.json())
                 .then(files => {
                     fileList.innerHTML = '';
-                    files.forEach(file => {
+                    files.forEach((file, index) => {
                         const li = document.createElement('li');
-                        li.textContent = file;
+                        li.textContent = `${index + 1}. ${file}`;
                         li.className = 'cursor-pointer hover:text-blue-500 transition duration-300';
                         li.onclick = () => showFileInfo(file);
                         fileList.appendChild(li);
@@ -195,9 +206,11 @@
             if (audioIds.length > 0) {
                 currentAudioId = audioIds[currentIndex];
                 transcriptionDiv.textContent = `${currentAudioId}: ${transcriptions[currentAudioId]}`;
+                transcriptionEdit.value = transcriptions[currentAudioId];
                 updateButtons('initial');
             } else {
                 transcriptionDiv.textContent = 'No transcriptions available. Please upload a transcriptions file.';
+                transcriptionEdit.value = '';
                 updateButtons('disabled');
             }
         }
@@ -315,6 +328,64 @@
                 });
             });
         }
+
+        saveTranscriptionButton.onclick = () => {
+            const newText = transcriptionEdit.value;
+            fetch('/update_transcription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    audio_id: currentAudioId,
+                    text: newText
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    transcriptions[currentAudioId] = newText;
+                    updateTranscription();
+                    alert('Transcription updated successfully');
+                } else {
+                    alert('Error updating transcription: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating transcription: ' + error.message);
+            });
+        };
+
+        setUploadFolderButton.onclick = () => {
+            const newFolder = uploadFolderInput.value.trim();
+            if (newFolder) {
+                fetch('/set_upload_folder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        folder: newFolder
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        updateFileList();
+                    } else {
+                        alert('Error setting upload folder: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error setting upload folder: ' + error.message);
+                });
+            } else {
+                alert('Please enter a valid folder path');
+            }
+        };
 
         // Initial setup
         updateFileList();

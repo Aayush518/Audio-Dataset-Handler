@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@radix-ui/react-alert-dialog": "^1.1.2",
-    "lucide-react": "^0.453.0",
-    "react-loader-spinner": "^6.1.6"
-  }
-}
