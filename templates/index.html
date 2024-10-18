@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Handler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen py-6 flex flex-col justify-center sm:py-12">
+    <div class="relative py-3 sm:max-w-xl sm:mx-auto">
+        <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
+        <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+            <div class="max-w-md mx-auto">
+                <div>
+                    <h1 class="text-2xl font-semibold text-center text-gray-900">Advanced Audio Recorder</h1>
+                </div>
+                
+                <div class="divide-y divide-gray-200">
+                    <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                        <div class="flex items-center justify-between">
+                            <div id="fileUpload" class="relative">
+                                <input type="file" id="transcriptionsFile" accept=".txt" class="sr-only">
+                                <label for="transcriptionsFile" class="cursor-pointer bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded inline-flex items-center transition duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    Upload Transcriptions
+                                </label>
+                            </div>
+                            <button id="uploadButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+                                Upload
+                            </button>
+                        </div>
+                        <div id="uploadInfo" class="mt-2 text-sm text-gray-600"></div>
+                    </div>
+                    
+                    <div id="transcription" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7"></div>
+                    
+                    <div id="controls" class="py-8 flex justify-center space-x-4">
+                        <button id="recordButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                            Record
+                        </button>
+                        <button id="stopButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 flex items-center" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                            </svg>
+                            Stop
+                        </button>
+                        <button id="playButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 flex items-center" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Play
+                        </button>
+                        <button id="nextButton" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                            </svg>
+                            Next
+                        </button>
+                    </div>
+                    
+                    <audio id="audioPlayback" controls class="w-full mb-8 hidden"></audio>
+                    
+                    <div class="py-8">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">File Directory</h2>
+                        <ul id="fileList" class="space-y-2"></ul>
+                    </div>
+                    
+                    <div id="fileInfo" class="py-8 hidden">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800">File Information</h2>
+                        <pre id="fileInfoContent" class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto"></pre>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Audio List</h2>
+                    <ul id="audioList" class="space-y-2"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let currentAudioId;
+
+        const recordButton = document.getElementById('recordButton');
+        const stopButton = document.getElementById('stopButton');
+        const playButton = document.getElementById('playButton');
+        const nextButton = document.getElementById('nextButton');
+        const transcriptionDiv = document.getElementById('transcription');
+        const audioPlayback = document.getElementById('audioPlayback');
+        const audioList = document.getElementById('audioList');
+        const uploadButton = document.getElementById('uploadButton');
+        const transcriptionsFile = document.getElementById('transcriptionsFile');
+        const uploadInfo = document.getElementById('uploadInfo');
+        const fileList = document.getElementById('fileList');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileInfoContent = document.getElementById('fileInfoContent');
+
+        let transcriptions = {};
+        let audioIds = [];
+        let currentIndex = 0;
+
+        function updateFileList() {
+            fetch('/list_files')
+                .then(response => response.json())
+                .then(files => {
+                    fileList.innerHTML = '';
+                    files.forEach(file => {
+                        const li = document.createElement('li');
+                        li.textContent = file;
+                        li.className = 'cursor-pointer hover:text-blue-500 transition duration-300';
+                        li.onclick = () => showFileInfo(file);
+                        fileList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function showFileInfo(filename) {
+            fetch(`/file_info/${filename}`)
+                .then(response => response.json())
+                .then(info => {
+                    fileInfoContent.textContent = JSON.stringify(info, null, 2);
+                    fileInfo.classList.remove('hidden');
+                    
+                    if (filename.endsWith('.wav')) {
+                        audioPlayback.src = `/wavs/${filename}`;
+                        audioPlayback.classList.remove('hidden');
+                    } else {
+                        audioPlayback.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        uploadButton.onclick = () => {
+            const file = transcriptionsFile.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/upload_transcriptions', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        transcriptions = data.transcriptions;
+                        audioIds = Object.keys(transcriptions);
+                        currentIndex = 0;
+                        updateTranscription();
+                        updateAudioList();
+                        updateFileList();
+                        uploadInfo.textContent = `Uploaded file: ${data.filename}`;
+                        uploadInfo.classList.add('text-green-500');
+                    } else {
+                        console.error('Error uploading transcriptions:', data.message);
+                        alert('Error uploading transcriptions: ' + data.message);
+                        uploadInfo.textContent = 'Error uploading file';
+                        uploadInfo.classList.add('text-red-500');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error uploading transcriptions: ' + error.message);
+                    uploadInfo.textContent = 'Error uploading file';
+                    uploadInfo.classList.add('text-red-500');
+                });
+            } else {
+                alert('No file selected');
+            }
+        };
+
+        function updateTranscription() {
+            if (audioIds.length > 0) {
+                currentAudioId = audioIds[currentIndex];
+                transcriptionDiv.textContent = `${currentAudioId}: ${transcriptions[currentAudioId]}`;
+                updateButtons('initial');
+            } else {
+                transcriptionDiv.textContent = 'No transcriptions available. Please upload a transcriptions file.';
+                updateButtons('disabled');
+            }
+        }
+
+        function updateAudioList() {
+            audioList.innerHTML = '';
+            audioIds.forEach(audioId => {
+                const li = document.createElement('li');
+                li.dataset.audioId = audioId;
+                li.className = 'flex items-center justify-between py-2 border-b';
+                li.innerHTML = `
+                    <span class="text-gray-700">${audioId}</span>
+                    <div>
+                        <button class="selectButton bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-2 rounded text-sm transition duration-300">Select</button>
+                        <span class="status ml-2"></span>
+                    </div>
+                `;
+                audioList.appendChild(li);
+            });
+            addSelectButtonListeners();
+        }
+
+        function updateButtons(state) {
+            recordButton.disabled = state === 'recording' || state === 'disabled';
+            stopButton.disabled = state !== 'recording';
+            playButton.disabled = state === 'recording' || state === 'disabled';
+            nextButton.disabled = state === 'disabled';
+
+            [recordButton, stopButton, playButton, nextButton].forEach(button => {
+                button.classList.toggle('opacity-50', button.disabled);
+                button.classList.toggle('cursor-not-allowed', button.disabled);
+            });
+        }
+
+        recordButton.onclick = async () => {
+            try {
+                audioChunks = [];
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                mediaRecorder.onstop = () => {
+                    saveAudio();
+                };
+                mediaRecorder.start();
+                updateButtons('recording');
+                document.querySelector(`li[data-audio-id="${currentAudioId}"] .status`).textContent = 'Recording...';
+                document.querySelector(`li[data-audio-id="${currentAudioId}"]`).classList.add('recording');
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                alert('Error starting recording: ' + error.message);
+            }
+        };
+
+        stopButton.onclick = () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                updateButtons('stopped');
+                document.querySelector(`li[data-audio-id="${currentAudioId}"] .status`).textContent = 'Recorded';
+                document.querySelector(`li[data-audio-id="${currentAudioId}"]`).classList.remove('recording');
+                document.querySelector(`li[data-audio-id="${currentAudioId}"]`).classList.add('recorded');
+            }
+        };
+
+        playButton.onclick = () => {
+            audioPlayback.src = `/wavs/${currentAudioId}.wav`;
+            audioPlayback.classList.remove('hidden');
+            audioPlayback.play();
+        };
+
+        function saveAudio() {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const formData = new FormData();
+            formData.append('audio', audioBlob, `${currentAudioId}.wav`);
+            formData.append('audio_id', currentAudioId);
+
+            fetch('/record', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Audio saved successfully');
+                    updateFileList();
+                } else {
+                    console.error('Error saving audio:', data.message);
+                    alert('Error saving audio: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving audio: ' + error.message);
+            });
+        }
+
+        nextButton.onclick = () => {
+            currentIndex = (currentIndex + 1) % audioIds.length;
+            updateTranscription();
+            audioChunks = [];
+            audioPlayback.classList.add('hidden');
+            updateButtons('initial');
+        };
+
+        function addSelectButtonListeners() {
+            document.querySelectorAll('.selectButton').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const selectedAudioId = event.target.closest('li').dataset.audioId;
+                    currentIndex = audioIds.indexOf(selectedAudioId);
+                    updateTranscription();
+                    audioChunks = [];
+                    audioPlayback.classList.add('hidden');
+                    updateButtons('initial');
+                });
+            });
+        }
+
+        // Initial setup
+        updateFileList();
+        updateTranscription();
+    </script>
+</body>
+</html>
